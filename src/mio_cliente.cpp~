@@ -1,0 +1,46 @@
+
+#include <ros/ros.h>
+#include <using_markers/tres.h>
+#include <cstdlib>
+
+int main(int argc, char **argv)
+{
+  ros::init(argc, argv, "mio_cliente");
+  if (argc != 4)
+  {
+    ROS_INFO("usage: mio_cliente X Y Z");
+    return 1;
+  }
+
+  ros::NodeHandle n;
+  ros::ServiceClient client = n.serviceClient<using_markers::cuatro>("cuatro");
+  using_markers::cuatro srv;
+  srv.request.a = atoll(argv[1]);
+  srv.request.b = atoll(argv[2]);
+  srv.request.c = atoll(argv[3]);
+  srv.request.signo = atoll(argv[4]);
+  if (client.call(srv))
+  {
+   /* ROS_INFO("Sum: %ld", (long int)srv.response.sum);  */
+    ROS_INFO("RECIBIDO POR EL SERVIDOR");
+  }
+  else
+  {
+    ROS_ERROR("Failed to call service cuatro");
+    return 1;
+  }
+
+  return 0;
+}
+
+
+/*
+
+ros::ServiceClient client = n.serviceClient<using_markers::tres>("tres");
+  using_markers::tres srv;
+  srv.request.a = atoll(argv[1]);
+  srv.request.b = atoll(argv[2]);
+  srv.request.c = atoll(argv[3]);
+  srv.request.signo = atoll(argv[4]);
+
+*/
