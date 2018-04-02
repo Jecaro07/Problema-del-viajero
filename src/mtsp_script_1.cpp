@@ -31,7 +31,7 @@ struct nodo p;
 struct nodo h;
 int contador;
 } ;
- 
+
 struct s_desg_nodo {
 vector<nodo> a;
 struct nodo p;
@@ -258,6 +258,24 @@ vector<float> reordena_vector2(vector<float> v_original, vector<float> v_ordenad
 
 
 
+/*nodo ordena_nodo(nodo p){
+	vector<float> auxiliar,auxiliar2,auxiliar3;
+	nodo mi_nodo;
+	
+	mi_nodo=p;
+	auxiliar=ordena_vector(mi_nodo.camino);	
+	
+	auxiliar2=reordena_vector2(mi_nodo.camino,auxiliar,mi_nodo.punto_sig);
+	 mi_nodo.punto_sig.resize(auxiliar2.size()); mi_nodo.punto_sig=auxiliar2;
+	
+	auxiliar3=reordena_vector2(mi_nodo.camino,auxiliar,mi_nodo.camino_activo);
+	 mi_nodo.camino_activo.resize(auxiliar3.size()); mi_nodo.camino_activo=auxiliar3;
+	
+	 mi_nodo.camino.resize(auxiliar.size()); mi_nodo.camino=auxiliar; 
+	
+	return mi_nodo;
+}*/
+
 nodo ordena_nodo(nodo p){
 	vector<float> auxiliar;
 	auxiliar.resize(p.camino.size());
@@ -271,13 +289,15 @@ nodo ordena_nodo(nodo p){
 }
 
 vector<float> refresca_auxiliar_f( vector<float> entrada){
-	vector<float> indices_aux, indices=entrada,salida;
+	vector<float> indices_aux, indices,salida;
+	indices.resize(entrada.size()); indices=entrada;
 	for(int x=0;x<indices.size();x++){
 			if(indices[x]==0){}
 		else{
 			indices_aux.push_back (indices[x]);
 		}
 	}
+	salida.resize(indices_aux.size());
 	salida=indices_aux;
 	return salida;
 }
@@ -330,7 +350,108 @@ float es_ultimo(int &B, struct nodo n,const vector<vector<float> > &dots, vector
 }
 
 
-struct s_dev_hijo devuelve_hijo (int &B, struct nodo padre,const vector<vector<float> > &dots,float dis,int counter){
+/*struct s_dev_hijo devuelve_hijo (int &ccc, int &B, struct nodo padre,const vector<vector<float> > &dots,float dis,int counter){
+	struct s_dev_hijo salida; 
+    vector<vector<float> > aux,fff;
+    int flag; float dist,distancia;
+   	vector<float> mul,c,r1,r2,ff;
+   	
+   	//cout<< "DEPURAR A HIERRO AGAIN "<< ccc  << endl; ccc=ccc+1; // 39
+   	
+   	
+   	//EMPIEZAN RESIZES
+   	c.resize(2);
+	//r1.resize(B); r2.resize(B); //numero de coordenadas
+	
+	padre.camino.swap(ff); padre.camino.resize(padre.punto_sig.size());
+	padre.camino_activo.swap(ff); padre.camino_activo.resize(padre.punto_sig.size());
+	//padre.escoge.resize(padre.punto_sig.size());
+
+	//cout<< "DEPURAR A HIERRO AGAIN "<< ccc  << endl; ccc=ccc+1; // 39
+
+   	//ACABAN RESIZES
+   	
+   	salida.p=padre;
+	
+	salida.h.indicador=counter; counter=counter+1;
+	salida.h.nivel=1+salida.p.nivel;
+	salida.h.definido=0;
+	
+	//cout<< "DEPURAR A HIERRO AGAIN "<< ccc  << endl; ccc=ccc+1; // 	39 
+	
+	if(salida.p.definido==1){}
+	else{
+		for(int i=0 ; i < salida.p.punto_sig.size() ; i++){
+			c[0]=salida.p.punto_act;
+			 c[1]=salida.p.punto_sig[i];
+			r1=cut_matrix(dots,c[0],-1); 
+	        r2=cut_matrix(dots,c[1],-1);
+			 distancia=norma(resta(r1,r2));
+			salida.p.camino[i]=distancia;
+			salida.p.camino_activo[i]=1;
+
+		}//FIN DEL FOR 
+		salida.p.vivo=1;	
+		salida.p=ordena_nodo(salida.p);	
+
+	}
+	//cout<< "DEPURAR A HIERRO AGAIN "<< ccc  << endl; ccc=ccc+1; // 39
+	
+	//aux.resize(salida.p.camino_activo.size(), vector<float>(salida.p.camino_activo.size()));
+	aux.swap(fff); aux.resize(salida.p.camino_activo.size());
+	for(int i=0 ; i < salida.p.camino_activo.size() ; i++){ 
+		aux[i].resize(salida.p.camino_activo.size());
+	for(int j=0 ; j < salida.p.camino_activo.size() ; j++){
+	 aux[i][j]=1;
+	}}
+	
+	//cout<< "DEPURAR A HIERRO AGAIN "<< ccc  << endl; ccc=ccc+1; // 39
+
+	salida.p.escoge.swap(ff); // aunque no hace falta; p está declarado en esta misma función
+	salida.p.escoge=cut_matrix(aux,0,-1); //
+
+	flag=0;
+
+		for(int i=0 ; i < salida.p.camino_activo.size() ; i++){
+		if(flag==0 && salida.p.camino_activo[i]==1){
+			flag=1;
+			salida.p.camino_activo[i]=0;
+			salida.p.escoge[i]=0;
+			dist=salida.p.camino[i];
+			salida.h.distancia_recorrida=dist+dis; 
+			salida.h.punto_act=salida.p.punto_sig[i]; 
+			
+		}
+		}
+		if(devuelve_activo(salida.p.camino_activo)==0){
+			salida.p.vivo=0;
+		}
+		
+		salida.p.definido=1;
+	
+	//MULTIPLICO ELEMENTO A ELEMENTO--->BEGIN
+	//se hace el resize
+	   	mul.resize(salida.p.escoge.size());
+
+	for(int i=0 ; i < salida.p.escoge.size() ; i++){ 
+		mul[i]=salida.p.punto_sig[i]*salida.p.escoge[i];
+	}
+	
+	salida.h.punto_sig=refresca_auxiliar_f(mul);	
+	
+	// REPASAR ESTAS DOS ÚLTIMAS LÍNEAS
+	salida.h.recorrido.swap(ff); salida.h.recorrido.resize(salida.p.recorrido.size());//
+	salida.h.recorrido=salida.p.recorrido;	
+    salida.h.recorrido.push_back (salida.h.punto_act);	
+    
+    // DEVUELVO LA SALIDA
+    salida.contador=counter;
+   //cout<< "DEPURAR A HIERRO AGAIN "<< ccc  << endl; ccc=ccc+1; // 39
+    return salida;
+    
+}*/
+
+struct s_dev_hijo devuelve_hijo (int &ccc,int &B, struct nodo padre,const vector<vector<float> > &dots,float dis,int counter){
 	struct s_dev_hijo salida; 
     vector<vector<float> > aux;
     int flag; float dist,distancia;
@@ -338,7 +459,7 @@ struct s_dev_hijo devuelve_hijo (int &B, struct nodo padre,const vector<vector<f
    	
    	//EMPIEZAN RESIZES
    	c.resize(2);
-	r1.resize(B); r2.resize(B); //numero de coordenadas
+	//r1.resize(B); r2.resize(B); //numero de coordenadas
 	
 	padre.camino.resize(padre.punto_sig.size());
 	padre.camino_activo.resize(padre.punto_sig.size());
@@ -422,20 +543,58 @@ struct s_dev_hijo devuelve_hijo (int &B, struct nodo padre,const vector<vector<f
     
 }
 
-
-struct s_desg_nodo desglosa_nodo (int &B,struct nodo padre,const vector<vector<float> > &puntos2,float dis,int contador_dh){
+struct s_desg_nodo desglosa_nodo (int &ccc, int &B,struct nodo padre,const vector<vector<float> > &puntos2,float dis,int contador_dh){
 
 struct s_dev_hijo salida2;
 struct s_desg_nodo devuelto;
 int salir,contador;
 
+
+
 salir=0; contador=1;
 
+//cout<< "DEPURAR A HIERRO AGAIN "<< ccc  << endl; ccc=ccc+1; // 1
+
+ while(salir==0){
+//cout<< "DEPURAR A HIERRO AGAIN "<< ccc  << endl; ccc=ccc+1; // 3
+	salida2=devuelve_hijo(ccc,B,padre,puntos2,dis,contador_dh);
+//cout<< "DEPURAR A HIERRO AGAIN "<< ccc  << endl; ccc=ccc+1; // 3
+contador=contador+1;
+devuelto.a.push_back (salida2.h);
+
+
+if(salida2.p.vivo==0){
+	salir=1;
+}
+
+padre=salida2.p;
+contador_dh=salida2.contador;
+//cout<< "DEPURAR A HIERRO AGAIN "<< ccc  << endl; ccc=ccc+1; // 3
+ }
+
+devuelto.p=padre;
+devuelto.contador=salida2.contador;
+
+// cout<< "DEPURAR A HIERRO AGAIN "<< ccc  << endl; ccc=ccc+1; // 1
+return devuelto;
+
+}
+
+/*struct s_desg_nodo desglosa_nodo (int &ccc,int &B,struct nodo padre,const vector<vector<float> > &puntos2,float dis,int contador_dh){
+
+struct s_dev_hijo salida2;
+struct s_desg_nodo devuelto;
+int salir,contador;
+vector<nodo> nn;
+
+//cout<< "DEPURAR A HIERRO AGAIN "<< ccc  << endl; ccc=ccc+1; // 23 
+
+salir=0; contador=1;
+devuelto.a.swap(nn); //
 
 
  while(salir==0){
-
-	salida2=devuelve_hijo(B,padre,puntos2,dis,contador_dh);
+	salida2=devuelve_hijo(ccc,B,padre,puntos2,dis,contador_dh);
 
 contador=contador+1;
 devuelto.a.push_back (salida2.h);
@@ -447,15 +606,14 @@ if(salida2.p.vivo==0){
 
 padre=salida2.p;
 contador_dh=salida2.contador;
-
  }
 
 devuelto.p=padre;
 devuelto.contador=salida2.contador;
-
+//cout<< "DEPURAR A HIERRO AGAIN "<< ccc  << endl; ccc=ccc+1; // 23
 return devuelto;
 
-}
+}*/
 
 
 void salida_desglosa_nodo(s_desg_nodo salida_dn){
@@ -526,7 +684,7 @@ for (int i = 0; i < salida_dn.a.size(); i++) {
 }
 
 
-void repeticion(int &CIU, int &B, int &salir,nodo &nodo_1,
+void repeticion(int &ccc,int &CIU, int &B, int &salir,nodo &nodo_1,
 vector<nodo> &nodo_desglosable,int &INDICE,float &distancia,
 vector< vector<float> > &puntos2, vector <float> &punto_final,
 s_desg_nodo &salida_dn, float &counter, vector<nodo> &v_n_maduros,
@@ -535,6 +693,9 @@ float &auxx, vector<float> &nodo_final, vector<float> &v,
 int &flag){
 	
 // EMPIEZA REPETICION 
+ vector <nodo> nn; nodo nnn;
+ 
+// cout<< "DEPURAR A HIERRO AGAIN "<< ccc  << endl; ccc=ccc+1; // 1
  
  // VARIABLES 
  salir=0;
@@ -546,12 +707,19 @@ int &flag){
  // no desgloso el nodo si está en el último nivel que quiero
 }
 
-else{
-	
+else{	 	 
+	//cout<< "DEPURAR A HIERRO AGAIN "<< ccc  << endl; ccc=ccc+1; // 1
 	while(salir==0){ // COMIENZO DEL WHILE
 	// desgloso los nodos del nivel inferior al que considero 
 	// y lo defino completamente	
-		salida_dn=desglosa_nodo(B,nodo_1,puntos2,distancia,counter);
+	
+	//cout<< "DEPURAR A HIERRO AGAIN "<< ccc  << endl; ccc=ccc+1; // 1
+	
+	salida_dn.a.swap(nn); salida_dn.p=nnn;
+	
+	
+		salida_dn=desglosa_nodo(ccc,B,nodo_1,puntos2,distancia,counter);
+	//cout<< "DEPURAR A HIERRO AGAIN__ "<< ccc  << endl; ccc=ccc+1; // 0
 		counter=salida_dn.contador;
 		v_n_maduros.push_back(salida_dn.p);
 		nodo_1=salida_dn.a[0];
@@ -574,19 +742,24 @@ else{
 		nodo_final.push_back((salida_dn.a[ii].distancia_recorrida)+auxx);
 	} // FIN DEL FOR
 		salir=1;
+		
+		
 	} // FIN DEL IF
+				
+	//cout<< "DEPURAR A HIERRO AGAIN "<< ccc  << endl; ccc=ccc+1; // 0
 				
 	} // FIN DEL WHILE
 	
-	
+//	cout<< "DEPURAR A HIERRO AGAIN "<< ccc  << endl; ccc=ccc+1; // 0
 	
 } // FIN DEL ELSE
 
+//cout<< "DEPURAR A HIERRO AGAIN "<< ccc  << endl; ccc=ccc+1; // 0
 
 // SECCION DE "REPETICION" ENCARGADA DE REFRESCAR ÍNDICE ENTRE ITERACIONES
 	// Recorremos los nodos desarrollados, "v_n_maduros"
 
-	
+
 	for (int i=0; i<v_n_maduros.size();i++){
 		
 		if((v_n_maduros[i].indicador==0) || ((v_n_maduros[i].indicador)-(v_n_maduros[i-1].indicador)<0) || (componente_rep(v,v_n_maduros[i].indicador))){	
@@ -609,6 +782,7 @@ else{
 	}// FIN DEL "FOR"
 	
 	 
+ //cout<< "DEPURAR A HIERRO AGAIN "<< ccc  << endl; ccc=ccc+1; // 
  
 // FIN "REPETICION"
 
@@ -732,9 +906,15 @@ void principal(vector<vector<vector<float>>> &puntos_recorrido_def,vector <float
  s_desg_nodo &salida_dn, float &counter, float &auxx, vector <float> &nodo_pre){  // definido en un buen lugar? (POSIBLES ERRORES)
 	
 	  // IMPORTANTE HACER EL RESIZE
-uno_tal.resize(1);
-dos_tal.resize(pp[CIU].size()-1);
 
+vector <nodo> nn; vector <float> ff;int ccc;
+
+uno_tal.swap(ff); uno_tal.resize(1);
+dos_tal.swap(ff); dos_tal.resize(pp[CIU].size()-1);
+
+
+
+r2.swap(ff); c.swap(ff);
  r2.resize(B); c.resize(1); 
  puntos_recorrido_def.resize(CIU+1);
 
@@ -745,6 +925,8 @@ dos_tal[j]=j+1;
 
 uno_tal[0]=0;
 
+
+
 // DESGLOSA NODO
 
 padre.nivel=1;
@@ -752,31 +934,52 @@ padre.definido=0;
 padre.distancia_recorrida=0;
 padre.punto_act=0;
 padre.indicador=0;
- padre.recorrido=uno_tal;
- padre.punto_sig=dos_tal; 
+ padre.recorrido.swap(ff); padre.recorrido.resize(uno_tal.size());padre.recorrido=uno_tal;
+ padre.punto_sig.swap(ff); padre.punto_sig.resize(dos_tal.size());padre.punto_sig=dos_tal; 
+
 
 
 // DATOS PREVIOS A "REPETICION" 
  counter=0;
-  distancia=nodo_1.distancia_recorrida;
+  distancia=padre.distancia_recorrida;
   salir=0; 
- nodo_desglosable.push_back(padre);
+ nodo_desglosable.clear();nodo_desglosable.push_back(padre);
  INDICE=0;
  tope=pp[CIU].size()-1;
  
- cout <<"creo que el problema esta en inicializar las variables en repeticion" <<endl;
 
+ 
+// LIBERO MEMORIA ENTRE ITERACIONES
+
+/* v_n_maduros.clear(); 
+ nodo_pre.clear(); 
+ nodo_final.clear(); 
+ v.clear(); 
+ aux.clear(); 
+ MINIMO.clear(); */
+ 
+ v_n_maduros.swap(nn);
+// nodo_pre.swap(ff);
+// nodo_final.swap(ff);
+ v.swap(ff);
+ aux.swap(nn);
+ MINIMO.swap(ff);
+ ccc=1;
+ // cout<< "DEPURAR A HIERRO AGAIN "<< ccc  << endl; ccc=ccc+1; // 1
+ 
  // EMPIEZA REPETICION
+  
+
  
  for(int xz=0;xz<cont_repeticion;xz++){
- 
- repeticion(CIU,B,salir,nodo_1,nodo_desglosable,INDICE,distancia,
+	 
+ repeticion(ccc,CIU,B,salir,nodo_1,nodo_desglosable,INDICE,distancia,
 pp[CIU], punto_final[CIU],salida_dn, counter, v_n_maduros,
 tope, nodo_pre, c, r1,auxx, nodo_final, v,flag);
 
 }
  
-
+// cout<< "DEPURAR A HIERRO AGAIN "<< ccc  << endl; ccc=ccc+1; // 0
 
 // EMPIEZA "BUSCA RECORRIDO"
 
@@ -786,9 +989,42 @@ for (int i = 0; i < nodo_final.size(); i++) {
 	}// fin del if
 }// fin del "for"
 
+//cout<< "DEPURAR A HIERRO AGAIN "<< ccc  << endl; ccc=ccc+1; // 0
+
 MINIMO.push_back(minimo(nodo_final));
 
 errorr=pow(10,-4);
+
+aux={};aux.resize(0);
+cout<< "TAMAÑO DE AUX: "<< aux.size()  << endl;
+//cout<< "DEPURAR A HIERRO AGAIN "<< ccc  << endl; ccc=ccc+1; // 
+
+// INICIO DEPURAR
+
+
+for(int i=0; i<nodo_desglosable.size(); i++){
+ for (int j=0; j<nodo_desglosable[i].punto_sig.size();j++){
+	cout<< "Componente "<< i <<" de NODO DESGLOSABLE_pto_sig: "<< nodo_desglosable[i].punto_sig[j]  << endl;
+}}
+cout<<endl;
+
+for(int i=0; i<nodo_desglosable.size(); i++){
+	cout<< "Componente "<< i <<" de NODO DESGLOSABLE_dist_rec: "<< nodo_desglosable[i].distancia_recorrida << endl;
+}
+cout<<endl;
+
+for(int i=0; i<nodo_final.size(); i++){
+	cout<< "Componente "<< i <<" de NODO FINAL: "<< nodo_final[i]  << endl;
+}
+cout<<endl;
+
+for(int i=0; i<nodo_pre.size(); i++){
+	cout<< "Componente "<< i <<" de NODO PRE: "<< nodo_pre[i]  << endl;
+}
+cout<<endl;
+// FIN DEPURAR
+
+
 
 for(int i=0; i<nodo_desglosable.size(); i++){
 	
@@ -805,10 +1041,27 @@ for(int i=0; i<nodo_desglosable.size(); i++){
 	
 }// fin del for
 
+// DEPURAR
+for(int i=0; i<aux.size(); i++){
+ for (int j=0; j<aux[i].punto_sig.size();j++){
+	cout<< "Componente "<< i <<" de NODO DESGLOSABLE_pto_sig: "<< aux[i].punto_sig[j]  << endl;
+}}
+cout<<endl;
+
+for(int i=0; i<aux.size(); i++){
+	cout<< "Componente "<< i <<" de NODO DESGLOSABLE_dist_rec: "<< aux[i].distancia_recorrida << endl;
+}
+cout<<endl;
+
+cout<< "TOPE: "<< tope <<endl; 
+cout<< "VITAL: "<< vital <<endl; 
+//
+
+//cout<< "DEPURAR A HIERRO AGAIN "<< ccc  << endl; ccc=ccc+1; // 0
 
 if(aux.size()>1){
 	aux_var=aux[0];
-	aux.clear();
+	aux.swap(nn);
 	aux.push_back(aux_var);
 }
 
@@ -825,6 +1078,7 @@ if(aux.size()>1){
   // AHORA SOLO ME FALTA VOLCAR EN "PUNTOS_RECORRIDO" 
   // LOS PUNTOS EN EL ORDEN EN EL QUE SE UNIRÁN EN RVIZ (puntos2(ordenado) + punto_final)
 
+puntos_recorrido.clear(); 
 puntos_recorrido.resize(A[CIU]+1);
 
 
@@ -851,10 +1105,11 @@ for (int i=0;i<puntos_recorrido.size();i++){
 		
 	}}
   
+    
    
 // IMPRIMO RESULTADOS POR PANTALLA   
        
- imprimir_resultados(cont_repeticion,A[CIU],B,puntos_recorrido,pp[CIU],MINIMO,
+ imprimir_resultados(cont_repeticion,A[CIU],B,puntos_recorrido_def[CIU],pp[CIU],MINIMO,
    aux,vital);
 	
 }
@@ -874,7 +1129,7 @@ vector<vector<float>> puntos_recorrido;
 s_dev_hijo salida,salida2;
 s_desg_nodo salida_dn;
 nodo padre, nodo_1;
-vector<float> v,r1,r2,c;
+vector<float> v,r1,r2,c,ff;
 
 // VARIABLES DE "REPETICION"
 int INDICE,flag,fin,tope;
@@ -902,20 +1157,15 @@ std::vector<float> dos_tal;
 
   pedir_pantalla_f(pp, cont_repeticion,A, B, punto_final);
   
-  CIU=0;
-  
+  for(CIU=0;CIU<A.size();CIU++){
+	  
+	  nodo_final.clear(); nodo_pre.clear();
+	  
   principal(puntos_recorrido_def,uno_tal,dos_tal,pp,r2,c,r1,MINIMO,nodo_final,v,A, B,
   cont_repeticion,tope, INDICE,salir,vital,flag, CIU, errorr, c11,c1,c2,c3,
   aux,aux_var,puntos_recorrido,nodo_desglosable,v_n_maduros,padre,
  distancia,nodo_1,punto_final,salida_dn, counter, auxx, nodo_pre);
- 
-  CIU=1;
-  
-  
-  principal(puntos_recorrido_def,uno_tal,dos_tal,pp,r2,c,r1,MINIMO,nodo_final,v,A, B,
-  cont_repeticion,tope, INDICE,salir,vital,flag, CIU, errorr, c11,c1,c2,c3,
-  aux,aux_var,puntos_recorrido,nodo_desglosable,v_n_maduros,padre,
- distancia,nodo_1,punto_final,salida_dn, counter, auxx, nodo_pre);
+ }
  
  cout<< "TAMAÑO DE A: " << A.size() << endl;
   
@@ -1089,6 +1339,8 @@ for (int i = 0; i < (A[0]); i++) {
 
     // Ciudades intermedias verdes
     points.color.g = 1.0f;
+    if(CIU>0){
+    points.color.r = 1.0f/CIU;}
     points.color.a = 1.0;
     
     // Ciudad partida blanca
@@ -1112,30 +1364,33 @@ for (int i = 0; i < (A[0]); i++) {
     line_list.color.a = 1.0;
 
 
-
+// A.size()
     // Create the vertices for the points and lines
+    
+    vector <geometry_msgs::Point> p; p.resize(A.size());
+    
     for (uint32_t ii = 0; ii < A.size(); ++ii){
-    for (uint32_t i = 0; i < (A[0]+1); ++i)
+    for (uint32_t i = 0; i < puntos_recorrido_def[ii].size(); ++i)
     {
-      geometry_msgs::Point p;
-      p.x = (float)puntos_recorrido_def[ii][i][0] ;
-      p.y = (float)puntos_recorrido_def[ii][i][1] ;
+      p[ii].x = (float)puntos_recorrido_def[ii][i][0] ;
+      p[ii].y = (float)puntos_recorrido_def[ii][i][1] ;
       
       if(B==3){
-     p.z = (float)puntos_recorrido_def[ii][i][2];
+     p[ii].z = (float)puntos_recorrido_def[ii][i][2];
 	}
 	
 	if(i==0){
-      po.points.push_back(p);
-      line_strip.points.push_back(p);
+      po.points.push_back(p[ii]);
+      line_strip.points.push_back(p[ii]);
      }
-     if(i==A[0]){
-      pf.points.push_back(p);
-      line_strip.points.push_back(p);
+     if(i==(puntos_recorrido_def[ii].size()-1)){
+      pf.points.push_back(p[ii]);
+      line_strip.points.push_back(p[ii]);  
+	  
      }
-     if(i>0 && i<A[0]){
-      points.points.push_back(p);
-      line_strip.points.push_back(p);
+     if(i>0 && i<(puntos_recorrido_def[ii].size()-1)){
+      points.points.push_back(p[ii]);
+      line_strip.points.push_back(p[ii]);
      }
 
     }
