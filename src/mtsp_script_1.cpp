@@ -31,7 +31,7 @@ struct nodo p;
 struct nodo h;
 int contador;
 } ;
-
+ 
 struct s_desg_nodo {
 vector<nodo> a;
 struct nodo p;
