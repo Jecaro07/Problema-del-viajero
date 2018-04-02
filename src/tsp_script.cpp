@@ -148,6 +148,8 @@ vector<float> resta(vector<float> r1,vector<float> r2){
 }
 
 vector<float> ordena_vector(vector<float> v){
+	
+	
 	vector<float> v_,v_aux;
 	int lon=v.size(),flag,contt,cont_;
 	v_.resize(v.size());
