@@ -38,7 +38,7 @@ struct nodo p;
 int contador;
 } ;
 
- void pedir_pantalla_f(int &cont_repeticion,int &A, int &B, vector<vector<float>> &puntos,
+ void pedir_pantalla_f(int &cont_repeticion,int   &A, int &B, vector<vector<float>> &puntos,
  vector<float> &punto_final){
  
  int coordenadas,n_puntos;
