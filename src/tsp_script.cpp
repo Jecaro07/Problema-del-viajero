@@ -7,6 +7,9 @@
 #include <stack>
 #include <algorithm>
 
+#include <fstream>
+#include <sstream>
+
 using namespace std;
  using std::vector;
 using namespace std;
@@ -38,55 +41,111 @@ struct nodo p;
 int contador;
 } ;
 
+void split(const string &s, char delim, vector<string> &elems) {
+    stringstream ss(s);
+    string item;
+    while (getline(ss, item, delim)) {
+        elems.push_back(item);
+    }
+}
+
+
+vector<string> split(const string &s, char delim) {
+    vector<string> elems;
+    split(s, delim, elems);
+    return elems;
+}
+
+
  void pedir_pantalla_f(int &cont_repeticion,int &A, int &B, vector<vector<float>> &puntos,
  vector<float> &punto_final){
  
  int coordenadas,n_puntos;
   float pto;
+  
+  string line; 
+    vector <string> words;
+    vector <float> p_inicial;
+    vector <vector<float>> p;
+  ifstream myfile;
+  myfile.open("tsp_datos.txt");
+  if (myfile.is_open()){
+	  
+	// COORDENADAS  
+   getline (myfile,line) ;
+		words = split(line,' ');
+		coordenadas=stoi(words[1]);
+      cout << coordenadas<< '\n';  
+      words.clear();
+    cout<<endl;
+    
+    // PUNTOS_INTERMEDIOS 
+    getline (myfile,line) ;
+		words = split(line,' ');
+		n_puntos=stoi(words[1]);
+      cout << n_puntos<< '\n';  
+      n_puntos=n_puntos+1;
+      words.clear();
+    cout<<endl;
+    
+    puntos.resize(n_puntos);
+    
+    
+    // PUNTO_INICIAL 
+    getline (myfile,line) ;
+		words = split(line,' ');
+	puntos[0].resize(coordenadas);
+	for (int j=0;j<puntos[0].size();j++){
+	puntos[0][j]=stof(words[j+1]);
+	cout << puntos[0][j]<< '\n'; 
+	} 
+      words.clear();
+    cout<<endl;
+    
+    // PUNTO_FINAL 
+    getline (myfile,line) ;
+		words = split(line,' ');
+	punto_final.resize(coordenadas);
+	for (int j=0;j<punto_final.size();j++){
+	punto_final[j]=stof(words[j+1]);
+	cout << punto_final[j]<< '\n'; 
+	} 
+      words.clear(); 
+    cout<<endl;
+  
+  // PUNTOS TRAYECTORIA
+  getline (myfile,line);
+  
+  for(int i=0;i<(n_puntos-1);i++){	  
+  getline (myfile,line) ;
+		words = split(line,' ');
+	puntos[i+1].resize(coordenadas);
+	for (int j=0;j<puntos[i+1].size();j++){
+	puntos[i+1][j]=stof(words[j]);
+	cout << puntos[i+1][j]<< '\n'; 
+	} 
+      words.clear();
+    cout<<endl;
+  }
+  
+  
+  // NUMERO DE REPETICIONES  
+   getline (myfile,line) ;
+		words = split(line,' ');
+		cont_repeticion=stoi(words[1]);
+       cout << cont_repeticion<< '\n';  
+      words.clear();
+    cout<<endl;
+    
+    myfile.close();
+  }
 
-	// COORDENADAS
-	do{		
-	cout << "Numero de coordenadas que manejamos (2/3): " << endl; 
-   cin >> coordenadas;		
-	}while(coordenadas!=3 && coordenadas!=2);
-   cout << "Coordenadas: " << coordenadas << endl;
+  else{ cout << "Unable to open file"; 
+}
+  
+  
    
-   // NUMERO DE PUNTOS
-   cout << "Numero de puntos que manejamos (entero): " << endl; 
-   cin >> n_puntos;	
-   
-   n_puntos=n_puntos+1;
-   
-   puntos.resize(n_puntos); // IMPORTANTE EL RESIZE
-   punto_final.resize(coordenadas);
-   
-   // PUNTO INICIAL
-   puntos[0].resize(coordenadas); // IMPORTANTE EL RESIZE
-   for(int j=0; j<coordenadas;j++){ 
-   cout << "Punto inicial; coordenada " << j+1 << " : " << endl; 
-	cin >> pto; 
-	puntos[0][j]=pto; }// fin del for 
-	
-	// PUNTO FINAL
-	for(int j=0; j<coordenadas;j++){ 
-   cout << "Punto final; coordenada " << j+1 << " : " << endl; 
-	cin >> pto; 
-	punto_final[j]=pto; }// fin del for 
-   
-   // PUNTOS DE LA TRAYECTORIA
-   for(int i=1; i<n_puntos;i++){
-	   puntos[i].resize(coordenadas); // IMPORTANTE EL RESIZE
-	   for(int j=0; j<coordenadas;j++){   
-   	cout << "Punto de la trayectoria numero "<< i << " ; coordenada " << j+1 << " : " << endl; 
-	cin >> pto; 
-	puntos[i][j]=pto;  
-   }} // fin de ambos for
-   
-   // NUMERO DE REPETICIONES DEL ALGORITMO
-   cout << "¿Cuántas repeticiones quieres hacer?: " << endl; 
-   cin >> cont_repeticion;		
-   
-   B=coordenadas; A=n_puntos;
+   B=coordenadas; A=n_puntos; 
  
  }
 
@@ -291,7 +350,7 @@ struct s_dev_hijo devuelve_hijo (int &B, struct nodo padre,const vector<vector<f
    	
    	//EMPIEZAN RESIZES
    	c.resize(2);
-	r1.resize(B); r2.resize(B); //numero de coordenadas
+	//r1.resize(B); r2.resize(B); //numero de coordenadas
 	
 	padre.camino.resize(padre.punto_sig.size());
 	padre.camino_activo.resize(padre.punto_sig.size());
@@ -708,8 +767,8 @@ std::vector<float> uno_tal;
 std::vector<float> dos_tal;
 
 
-  //pedir_pantalla_f(cont_repeticion,A, B,puntos,punto_final);
-
+  pedir_pantalla_f(cont_repeticion,A, B,puntos,punto_final);
+/*
 cont_repeticion=20;
 A=3; B=2; // TRABAJAMOS EN 2D
 puntos={
@@ -719,7 +778,7 @@ puntos={
 	{4,5},	
 };
 
-punto_final={-5,9};
+punto_final={-5,9};*/
 
 
 // IMPORTANTE HACER EL RESIZE
@@ -780,6 +839,32 @@ MINIMO.push_back(minimo(nodo_final));
 
 errorr=pow(10,-4);
 
+
+// INICIO DEPURAR
+
+
+for(int i=0; i<nodo_desglosable.size(); i++){
+ for (int j=0; j<nodo_desglosable[i].punto_sig.size();j++){
+	cout<< "Componente "<< i <<" de NODO DESGLOSABLE_pto_sig: "<< nodo_desglosable[i].punto_sig[j]  << endl;
+}}
+cout<<endl;
+
+for(int i=0; i<nodo_desglosable.size(); i++){
+	cout<< "Componente "<< i <<" de NODO DESGLOSABLE_dist_rec: "<< nodo_desglosable[i].distancia_recorrida << endl;
+}
+cout<<endl;
+
+for(int i=0; i<nodo_final.size(); i++){
+	cout<< "Componente "<< i <<" de NODO FINAL: "<< nodo_final[i]  << endl;
+}
+cout<<endl;
+
+for(int i=0; i<nodo_pre.size(); i++){
+	cout<< "Componente "<< i <<" de NODO PRE: "<< nodo_pre[i]  << endl;
+}
+cout<<endl;
+// FIN DEPURAR
+
 for(int i=0; i<nodo_desglosable.size(); i++){
 	
 	distancia=norma(resta(punto_final,cut_matrix(puntos,nodo_desglosable[i].punto_act,-1)));
@@ -795,6 +880,21 @@ for(int i=0; i<nodo_desglosable.size(); i++){
 	
 }// fin del for
 
+// DEPURAR
+for(int i=0; i<aux.size(); i++){
+ for (int j=0; j<aux[i].punto_sig.size();j++){
+	cout<< "Componente "<< i <<" de NODO DESGLOSABLE_pto_sig: "<< aux[i].punto_sig[j]  << endl;
+}}
+cout<<endl;
+
+for(int i=0; i<aux.size(); i++){
+	cout<< "Componente "<< i <<" de NODO DESGLOSABLE_dist_rec: "<< aux[i].distancia_recorrida << endl;
+}
+cout<<endl;
+
+cout<< "TOPE: "<< tope <<endl; 
+cout<< "VITAL: "<< vital <<endl; 
+//
 
 if(aux.size()>1){
 	aux_var=aux[0];
