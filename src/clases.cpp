@@ -1,6 +1,9 @@
 #include <iostream>
 #include <cmath>
 #include <vector>
+#include <fstream>
+#include <string>
+#include <sstream>
 
 #define _USE_MATH_DEFINES
 
@@ -35,11 +38,44 @@ T figgeo<T>::cuadrado()
   return retval;
 }
 
+void split(const string &s, char delim, vector<string> &elems) {
+    stringstream ss(s);
+    string item;
+    while (getline(ss, item, delim)) {
+        elems.push_back(item);
+    }
+}
+
+
+vector<string> split(const string &s, char delim) {
+    vector<string> elems;
+    split(s, delim, elems);
+    return elems;
+}
+
 int main () {
-   figgeo <float> variable (2.2);
-   vector<float> pepe;
-   pepe=variable.circulo();
-   cout << pepe[1] << endl;
-   cout << variable.cuadrado() << endl;
+    string line; float dd;
+    vector <string> words;
+  ifstream myfile;
+  myfile.open("datos.txt");
+  if (myfile.is_open())
+  {
+    while ( getline (myfile,line) )
+    {
+		words = split(line,' ');
+		//dd=stof(line);	
+      cout << line<< '\n';
+    }
+    cout<<endl;
+    for(int j=0;j<words.size();j++){
+    cout << words[j]<< '\n';}
+    
+    myfile.close();
+  }
+
+  else cout << "Unable to open file"; 
+
+   
+   
   return 0;
 }
