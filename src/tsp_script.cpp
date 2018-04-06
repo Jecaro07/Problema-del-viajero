@@ -75,18 +75,18 @@ vector<string> split(const string &s, char delim) {
    getline (myfile,line) ;
 		words = split(line,' ');
 		coordenadas=stoi(words[1]);
-      cout << coordenadas<< '\n';  
+      //cout << coordenadas<< '\n';  
       words.clear();
-    cout<<endl;
+    //cout<<endl;
     
     // PUNTOS_INTERMEDIOS 
     getline (myfile,line) ;
 		words = split(line,' ');
 		n_puntos=stoi(words[1]);
-      cout << n_puntos<< '\n';  
+      //cout << n_puntos<< '\n';  
       n_puntos=n_puntos+1;
       words.clear();
-    cout<<endl;
+    //cout<<endl;
     
     puntos.resize(n_puntos);
     
@@ -97,10 +97,10 @@ vector<string> split(const string &s, char delim) {
 	puntos[0].resize(coordenadas);
 	for (int j=0;j<puntos[0].size();j++){
 	puntos[0][j]=stof(words[j+1]);
-	cout << puntos[0][j]<< '\n'; 
+	//cout << puntos[0][j]<< '\n'; 
 	} 
       words.clear();
-    cout<<endl;
+    //cout<<endl;
     
     // PUNTO_FINAL 
     getline (myfile,line) ;
@@ -108,10 +108,10 @@ vector<string> split(const string &s, char delim) {
 	punto_final.resize(coordenadas);
 	for (int j=0;j<punto_final.size();j++){
 	punto_final[j]=stof(words[j+1]);
-	cout << punto_final[j]<< '\n'; 
+	//cout << punto_final[j]<< '\n'; 
 	} 
       words.clear(); 
-    cout<<endl;
+    //cout<<endl;
   
   // PUNTOS TRAYECTORIA
   getline (myfile,line);
@@ -122,10 +122,10 @@ vector<string> split(const string &s, char delim) {
 	puntos[i+1].resize(coordenadas);
 	for (int j=0;j<puntos[i+1].size();j++){
 	puntos[i+1][j]=stof(words[j]);
-	cout << puntos[i+1][j]<< '\n'; 
+	//cout << puntos[i+1][j]<< '\n'; 
 	} 
       words.clear();
-    cout<<endl;
+    //cout<<endl;
   }
   
   
@@ -133,9 +133,9 @@ vector<string> split(const string &s, char delim) {
    getline (myfile,line) ;
 		words = split(line,' ');
 		cont_repeticion=stoi(words[1]);
-       cout << cont_repeticion<< '\n';  
+       //cout << cont_repeticion<< '\n';  
       words.clear();
-    cout<<endl;
+    //cout<<endl;
     
     myfile.close();
   }
@@ -733,15 +733,21 @@ void imprimir_resultados(int cont_repeticion,int A, int B,
 int main( int argc, char** argv )
 {
 
+ros::init(argc, argv, "tsp_script");
+  ros::NodeHandle n;
+  ros::Publisher marker_pub = n.advertise<visualization_msgs::Marker>("visualization_marker", 10);
+  ros::Rate r(30);
+  float f = 0.0; 
+
 int A,B,cont_repeticion;
-   vector<vector<float>> puntos;
+   vector<vector<float>> puntos,fff;
    vector<float> punto_final;
   
 vector<vector<float>> puntos_recorrido;
-s_dev_hijo salida,salida2;
-s_desg_nodo salida_dn;
-nodo padre, nodo_1;
-vector<float> v,r1,r2,c;
+s_dev_hijo salida,salida2,sss;
+s_desg_nodo salida_dn,ss;
+nodo padre, nodo_1,nn;
+vector<float> v,r1,r2,c,ff;
 
 // VARIABLES DE "REPETICION"
 int INDICE,flag,fin,tope;
@@ -754,7 +760,7 @@ int vital;
 bool c11, c1,c2,c3;
 float errorr;
 vector<float> MINIMO;
-vector<nodo> aux;
+vector<nodo> aux,nnn;
 nodo aux_var;
 vector<nodo> v_n_maduros, nodo_desglosable;
 
@@ -935,15 +941,14 @@ for (int i = 0; i < (A); i++) {
  imprimir_resultados(cont_repeticion,A,B,puntos_recorrido,puntos,MINIMO,
    aux,vital);
        
+       
 //FIN PRUEBAS
-
-  ros::init(argc, argv, "points_and_lines");
+/*
+  ros::init(argc, argv, "tsp_script");
   ros::NodeHandle n;
   ros::Publisher marker_pub = n.advertise<visualization_msgs::Marker>("visualization_marker", 10);
   ros::Rate r(30);
-  float f = 0.0;
-
-
+  float f = 0.0; */
 
   while (ros::ok())
   {
@@ -952,10 +957,9 @@ for (int i = 0; i < (A); i++) {
     
     po.header.frame_id =pf.header.frame_id =points.header.frame_id = line_strip.header.frame_id = line_list.header.frame_id = "/my_frame";
     po.header.stamp =pf.header.stamp =points.header.stamp = line_strip.header.stamp = line_list.header.stamp = ros::Time::now();
-    po.ns =pf.ns =points.ns = line_strip.ns = line_list.ns = "points_and_lines";
+    po.ns =pf.ns =points.ns = line_strip.ns = line_list.ns = "tsp_script";
     po.action =pf.action =points.action = line_strip.action = line_list.action = visualization_msgs::Marker::ADD;
     po.pose.orientation.w =pf.pose.orientation.w =points.pose.orientation.w = line_strip.pose.orientation.w = line_list.pose.orientation.w = 1.0;
-
 
 
     points.id = 0;
@@ -1013,6 +1017,7 @@ for (int i = 0; i < (A); i++) {
     line_list.color.r = 1.0;
     line_list.color.a = 1.0;
 
+      
 
 
     // Create the vertices for the points and lines
@@ -1050,4 +1055,6 @@ for (int i = 0; i < (A); i++) {
     r.sleep();
 
   }
+  
+  return 0;
  } 
